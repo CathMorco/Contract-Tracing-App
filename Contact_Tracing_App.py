@@ -133,11 +133,13 @@ class GUI(QtWidgets.QMainWindow):
         new_place = place.strip()
         if new_place:
             places_list = self.completer.model().stringList()
-            places_list.append(new_place)
-            self.completer.setModel(QtCore.QStringListModel(places_list))
-            self.places_input.setCompleter(self.completer)
-            # Save the updated places list to the file
-            self.save_places_to_file(places_list)
+            if new_place not in places_list:
+                places_list = self.completer.model().stringList()
+                places_list.append(new_place)
+                self.completer.setModel(QtCore.QStringListModel(places_list))
+                self.places_input.setCompleter(self.completer)
+                # Save the updated places list to the file
+                self.save_places_to_file(places_list)
 
         # Set the file path including the name
         file_path = os.path.join("C:/Users/ASUS/Desktop/Visual Studio Code Projects/FINAL PROJECT OOP/Contract-Tracing-App/TextFiles", f"{file_name}.txt")
