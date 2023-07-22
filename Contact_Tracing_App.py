@@ -24,20 +24,27 @@ class GUI(QtWidgets.QMainWindow):
         self.places_input = QLineEdit(self.addEntryWidget)
         self.places_input.setCompleter(self.completer)
 
-
+        #User Name Input in addEntryWidget
         self.name_label = QLabel("Name:", self.addEntryWidget)
         self.name_input = QLineEdit(self.addEntryWidget)
 
+        #User Age Input in addEntryWidget
         self.age_label = QLabel("Age:", self.addEntryWidget)
         self.age_input = QLineEdit(self.addEntryWidget)
 
+        #User Address Input in addEntryWidget
         self.address_label = QLabel("Address:", self.addEntryWidget)
         self.address_input = QLineEdit(self.addEntryWidget)
 
+        #User Contact Number Input in addEntryWidget
         self.contact_label = QLabel("Contact Number:", self.addEntryWidget)
         self.contact_input = QLineEdit(self.addEntryWidget)
+
+        #Creating Save Button
         self.save_button = QtWidgets.QPushButton("Save", self.addEntryWidget)
         self.save_button.clicked.connect(self.save_text_to_file)
+
+        #Form Layout of addEntryWidget
         add_entry_layout = QtWidgets.QFormLayout(self.addEntryWidget)
         add_entry_layout.addRow(self.places_label, self.places_input)
         add_entry_layout.addRow(self.name_label, self.name_input)
@@ -56,13 +63,14 @@ class GUI(QtWidgets.QMainWindow):
         self.stacked_widget.addWidget(self.addEntryWidget)
         self.stacked_widget.addWidget(self.searchEntryWidget)
 
-        # Create the buttons
+        # Create the Add Entry and Search Entry buttons
         self.addEntryButton = QtWidgets.QPushButton("Add Entry")
         self.addEntryButton.clicked.connect(self.show_add_entry_view)
 
         self.searchEntryButton = QtWidgets.QPushButton("Search Entry")
         self.searchEntryButton.clicked.connect(self.show_search_entry_view)
 
+        #Layout of the program
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.addEntryButton)
         layout.addWidget(self.searchEntryButton)
@@ -83,16 +91,19 @@ class GUI(QtWidgets.QMainWindow):
     def show_search_entry_view(self):
         self.stacked_widget.setCurrentWidget(self.searchEntryWidget)
 
+    #Saves the user's input into a text file
     def save_text_to_file(self):
         name = self.name_input.text()
         age = self.age_input.text()
         address = self.address_input.text()
         contact_number = self.contact_input.text()
 
+        #Requires the user to fill in all fields
         if not name.strip() or not age.strip() or not address.strip() or not contact_number.strip():
             QMessageBox.warning(self, "Warning", "All fields must be filled!")
             return
 
+        #Adds new place into the initial list for the auto completer
         new_place = self.places_input.text().strip()
         if new_place:
             places_list = self.completer.model().stringList()
@@ -117,6 +128,7 @@ class GUI(QtWidgets.QMainWindow):
 
         QMessageBox.information(self, "Success", "Data saved successfully!")
 
+#Runs the main program
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
     window = GUI()
