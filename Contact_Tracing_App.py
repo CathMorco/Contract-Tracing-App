@@ -15,8 +15,8 @@ class GUI(QtWidgets.QMainWindow):
         # Add Entry View
         self.addEntryWidget = QtWidgets.QWidget()
 
-        # auto complete options                                                 
-        places = ["PUP Main - A. Mabini Campus, Sta. Mesa, Manila","PUP College of Engineering and Architecture Bldg., NDC Compound Anonas cor Pureza Sts., Sta. Mesa, Manila 1016", "College of Communication, COC Building, NDC Compound, Anonas St., Sta. Mesa, Manila 1016","PUP Institute of Technology, NDC Compound, Pureza St., Sta. Mesa, Manila, Philippines 1016", "PUP University Center for Culture and the Arts, Sentrong Pang-unibersidad para sa Kultura at mga Sining,  College of Communication Compound, NDC Campus, Anonas St. Sta. Mesa, Manila 1016"]
+        # auto complete options
+        places = self.load_places_from_file()                                                 
         self.completer = QCompleter(places)
 
         # create line edit and add auto complete                                
@@ -91,27 +91,53 @@ class GUI(QtWidgets.QMainWindow):
     def show_search_entry_view(self):
         self.stacked_widget.setCurrentWidget(self.searchEntryWidget)
 
+    # Loads places from the file
+    def load_places_from_file(self):
+        file_path = "C:/Users/ASUS/Desktop/Visual Studio Code Projects/FINAL PROJECT OOP/Contract-Tracing-App/PlacesList/places.txt"
+        if os.path.exists(file_path):
+            try:
+                with open(file_path, "r") as file:
+                    places_list = [line.strip() for line in file.readlines()]
+                return places_list
+            except Exception as e:
+                print(f"An error occurred while loading places from the file: {e}")
+        return None
+
+    # Saves places to the file
+    def save_places_to_file(self, places_list):
+        file_path = "C:/Users/ASUS/Desktop/Visual Studio Code Projects/FINAL PROJECT OOP/Contract-Tracing-App/PlacesList/places.txt"
+        try:
+            with open(file_path, "w") as file:
+                file.write("\n".join(places_list))
+        except Exception as e:
+            print(f"An error occurred while saving places to the file: {e}")
+
+
     #Saves the user's input into a text file
     def save_text_to_file(self):
         name = self.name_input.text()
         age = self.age_input.text()
         address = self.address_input.text()
         contact_number = self.contact_input.text()
+        place = self.places_input.text()
 
         #Requires the user to fill in all fields
         if not name.strip() or not age.strip() or not address.strip() or not contact_number.strip():
             QMessageBox.warning(self, "Warning", "All fields must be filled!")
             return
 
-        #Adds new place into the initial list for the auto completer
-        new_place = self.places_input.text().strip()
+        file_name = "".join(c if c.isalnum() else "_" for c in name)
+
+
+        # Add new place to the places list
+        new_place = place.strip()
         if new_place:
             places_list = self.completer.model().stringList()
             places_list.append(new_place)
             self.completer.setModel(QtCore.QStringListModel(places_list))
             self.places_input.setCompleter(self.completer)
-
-        file_name = "".join(c if c.isalnum() else "_" for c in name)
+            # Save the updated places list to the file
+            self.save_places_to_file(places_list)
 
         # Set the file path including the name
         file_path = os.path.join("C:/Users/ASUS/Desktop/Visual Studio Code Projects/FINAL PROJECT OOP/Contract-Tracing-App/TextFiles", f"{file_name}.txt")
@@ -121,7 +147,7 @@ class GUI(QtWidgets.QMainWindow):
                 file.write("Age: " + age + "\n")
                 file.write("Address: " + address + "\n")
                 file.write("Contact Number: " + contact_number + "\n")
-                file.write("Last Place Visited: " + new_place + "\n")
+                file.write("Last Place Visited: " + place + "\n")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred while saving the text: {e}")
 
