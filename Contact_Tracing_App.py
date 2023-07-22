@@ -1,5 +1,6 @@
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit
+import os
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit, QCompleter, QFormLayout
 
 
 class GUI(QtWidgets.QMainWindow):
@@ -13,6 +14,17 @@ class GUI(QtWidgets.QMainWindow):
 
         # Add Entry View
         self.addEntryWidget = QtWidgets.QWidget()
+
+        # auto complete options                                                 
+        places = ["PUP Main - A. Mabini Campus, Sta. Mesa, Manila","PUP College of Engineering and Architecture Bldg., NDC Compound Anonas cor Pureza Sts., Sta. Mesa, Manila 1016", "College of Communication, COC Building, NDC Compound, Anonas St., Sta. Mesa, Manila 1016","PUP Institute of Technology, NDC Compound, Pureza St., Sta. Mesa, Manila, Philippines 1016", "PUP University Center for Culture and the Arts, Sentrong Pang-unibersidad para sa Kultura at mga Sining,  College of Communication Compound, NDC Campus, Anonas St. Sta. Mesa, Manila 1016"]
+        self.completer = QCompleter(places)
+
+        # create line edit and add auto complete                                
+        self.places_label = QLabel("Last Place Visited:", self.addEntryWidget)
+        self.places_input = QLineEdit(self.addEntryWidget)
+        self.places_input.setCompleter(self.completer)
+
+
         self.name_label = QLabel("Name:", self.addEntryWidget)
         self.name_input = QLineEdit(self.addEntryWidget)
 
@@ -27,6 +39,7 @@ class GUI(QtWidgets.QMainWindow):
         self.save_button = QtWidgets.QPushButton("Save", self.addEntryWidget)
         self.save_button.clicked.connect(self.save_text_to_file)
         add_entry_layout = QtWidgets.QFormLayout(self.addEntryWidget)
+        add_entry_layout.addRow(self.places_label, self.places_input)
         add_entry_layout.addRow(self.name_label, self.name_input)
         add_entry_layout.addRow(self.age_label, self.age_input)
         add_entry_layout.addRow(self.address_label, self.address_input)
@@ -71,20 +84,38 @@ class GUI(QtWidgets.QMainWindow):
         self.stacked_widget.setCurrentWidget(self.searchEntryWidget)
 
     def save_text_to_file(self):
-        text = self.text_edit.toPlainText()
-        if text.strip() == "":
-            QMessageBox.warning(self, "Warning", "Cannot save an empty text!")
+        name = self.name_input.text()
+        age = self.age_input.text()
+        address = self.address_input.text()
+        contact_number = self.contact_input.text()
+
+        if not name.strip() or not age.strip() or not address.strip() or not contact_number.strip():
+            QMessageBox.warning(self, "Warning", "All fields must be filled!")
             return
 
-        file_path, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Text File", "", "Text Files (*.txt)")
-        if file_path:
-            try:
-                with open(file_path, "w") as file:
-                    file.write(text)
-                QMessageBox.information(self, "Success", "Text saved to file successfully!")
-            except Exception as e:
-                QMessageBox.critical(self, "Error", f"An error occurred while saving the text: {e}")
+        new_place = self.places_input.text().strip()
+        if new_place:
+            places_list = self.completer.model().stringList()
+            places_list.append(new_place)
+            self.completer.setModel(QtCore.QStringListModel(places_list))
+            self.places_input.setCompleter(self.completer)
 
+        file_name = "".join(c if c.isalnum() else "_" for c in name)
+
+        # Set the file path including the name
+        file_path = os.path.join("C:/Users/ASUS/Desktop/Visual Studio Code Projects/FINAL PROJECT OOP/Contract-Tracing-App/TextFiles", f"{file_name}.txt")
+        try:
+            with open(file_path, "w") as file:
+                file.write("Name: " + name + "\n")
+                file.write("Age: " + age + "\n")
+                file.write("Address: " + address + "\n")
+                file.write("Contact Number: " + contact_number + "\n")
+                file.write("Last Place Visited: " + new_place + "\n")
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred while saving the text: {e}")
+
+
+        QMessageBox.information(self, "Success", "Data saved successfully!")
 
 if __name__ == '__main__':
     app = QtWidgets.QApplication([])
