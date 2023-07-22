@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QStackedWidget
+from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit
+
 
 class GUI(QtWidgets.QMainWindow):
     def __init__(self):
@@ -12,11 +13,24 @@ class GUI(QtWidgets.QMainWindow):
 
         # Add Entry View
         self.addEntryWidget = QtWidgets.QWidget()
-        self.text_edit = QtWidgets.QTextEdit(self.addEntryWidget)
+        self.name_label = QLabel("Name:", self.addEntryWidget)
+        self.name_input = QLineEdit(self.addEntryWidget)
+
+        self.age_label = QLabel("Age:", self.addEntryWidget)
+        self.age_input = QLineEdit(self.addEntryWidget)
+
+        self.address_label = QLabel("Address:", self.addEntryWidget)
+        self.address_input = QLineEdit(self.addEntryWidget)
+
+        self.contact_label = QLabel("Contact Number:", self.addEntryWidget)
+        self.contact_input = QLineEdit(self.addEntryWidget)
         self.save_button = QtWidgets.QPushButton("Save", self.addEntryWidget)
         self.save_button.clicked.connect(self.save_text_to_file)
-        add_entry_layout = QtWidgets.QVBoxLayout(self.addEntryWidget)
-        add_entry_layout.addWidget(self.text_edit)
+        add_entry_layout = QtWidgets.QFormLayout(self.addEntryWidget)
+        add_entry_layout.addRow(self.name_label, self.name_input)
+        add_entry_layout.addRow(self.age_label, self.age_input)
+        add_entry_layout.addRow(self.address_label, self.address_input)
+        add_entry_layout.addRow(self.contact_label, self.contact_input)
         add_entry_layout.addWidget(self.save_button)
 
         # Search Entry View
