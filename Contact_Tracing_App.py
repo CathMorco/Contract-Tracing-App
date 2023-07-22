@@ -1,76 +1,79 @@
 from PyQt5 import QtWidgets
+from PyQt5.QtWidgets import QMessageBox, QStackedWidget
 
-
-class GUI:
+class GUI(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
         self.app = QtWidgets.QApplication([])
         self.window = QtWidgets.QWidget()
         self.window.setWindowTitle("Contact Tracing")
 
-        # Create the buttons
-        self.button1 = QtWidgets.QPushButton("Add Entry")
-        self.button1.clicked.connect(self.Add_Entry)
+        self.stacked_widget = QStackedWidget()
 
-        self.button2 = QtWidgets.QPushButton("Search Entry")
-        self.button2.clicked.connect(self.Search_Entry)
+        # Add Entry View
+        self.addEntryWidget = QtWidgets.QWidget()
+        self.text_edit = QtWidgets.QTextEdit(self.addEntryWidget)
+        self.save_button = QtWidgets.QPushButton("Save", self.addEntryWidget)
+        self.save_button.clicked.connect(self.save_text_to_file)
+        add_entry_layout = QtWidgets.QVBoxLayout(self.addEntryWidget)
+        add_entry_layout.addWidget(self.text_edit)
+        add_entry_layout.addWidget(self.save_button)
+
+        # Search Entry View
+        self.searchEntryWidget = QtWidgets.QWidget()
+        search_entry_label = QtWidgets.QLabel("Search Entry View", self.searchEntryWidget)
+        search_entry_layout = QtWidgets.QVBoxLayout(self.searchEntryWidget)
+        search_entry_layout.addWidget(search_entry_label)
+
+        # Add both views to the stacked widget
+        self.stacked_widget.addWidget(self.addEntryWidget)
+        self.stacked_widget.addWidget(self.searchEntryWidget)
+
+        # Create the buttons
+        self.addEntryButton = QtWidgets.QPushButton("Add Entry")
+        self.addEntryButton.clicked.connect(self.show_add_entry_view)
+
+        self.searchEntryButton = QtWidgets.QPushButton("Search Entry")
+        self.searchEntryButton.clicked.connect(self.show_search_entry_view)
 
         layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(self.button1)
-        layout.addWidget(self.button2)
+        layout.addWidget(self.addEntryButton)
+        layout.addWidget(self.searchEntryButton)
+        layout.addWidget(self.stacked_widget)
 
-        self.window.setLayout(layout)
-        self.window.setGeometry(100, 100, 600, 400)
-
-
-
-
+        central_widget = QtWidgets.QWidget()
+        central_widget.setLayout(layout)
+        self.setCentralWidget(central_widget)
+        self.setGeometry(100, 100, 600, 400)
 
     def main(self):
         self.window.show()
         self.app.exec_()
 
-    def Add_Entry(self):
-        # Clear the current GUI
-        while self.window.layout().count():
-            item = self.window.layout().takeAt(0)
-            widget = item.widget()
-            if widget is not None:
-                widget.deleteLater()
+    def show_add_entry_view(self):
+        self.stacked_widget.setCurrentWidget(self.addEntryWidget)
 
-        self.button1 = QtWidgets.QPushButton("Go Back")
-        self.button1.clicked.connect(self.go_back_option)
-        self.window.layout().addWidget(self.button1)
+    def show_search_entry_view(self):
+        self.stacked_widget.setCurrentWidget(self.searchEntryWidget)
 
+    def save_text_to_file(self):
+        text = self.text_edit.toPlainText()
+        if text.strip() == "":
+            QMessageBox.warning(self, "Warning", "Cannot save an empty text!")
+            return
 
-    def Search_Entry(self):
-        # Clear the current GUI
-        while self.window.layout().count():
-            item = self.window.layout().takeAt(0)
-            widget = item.widget()
-            if widget is not None:
-                widget.deleteLater()
-
-        self.button1 = QtWidgets.QPushButton("Go Back")
-        self.button1.clicked.connect(self.go_back_option)
-        self.window.layout().addWidget(self.button1)
-
-    def go_back_option(self):
-        while self.window.layout().count():
-            item = self.window.layout().takeAt(0)
-            widget = item.widget()
-            if widget is not None:
-                widget.deleteLater()
-
-        self.button1 = QtWidgets.QPushButton("Add Entry")
-        self.button1.clicked.connect(self.Add_Entry)
-        self.window.layout().addWidget(self.button1)
-
-        self.button2 = QtWidgets.QPushButton("Search Entry")
-        self.button2.clicked.connect(self.Search_Entry)
-        self.window.layout().addWidget(self.button2)
+        file_path, _ = QtWidgets.QFileDialog.getSaveFileName(self, "Save Text File", "", "Text Files (*.txt)")
+        if file_path:
+            try:
+                with open(file_path, "w") as file:
+                    file.write(text)
+                QMessageBox.information(self, "Success", "Text saved to file successfully!")
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"An error occurred while saving the text: {e}")
 
 
 if __name__ == '__main__':
+    app = QtWidgets.QApplication([])
     window = GUI()
-    window.main()
+    window.show()
+    app.exec_()
