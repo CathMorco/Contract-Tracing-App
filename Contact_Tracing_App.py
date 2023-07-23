@@ -1,7 +1,7 @@
 import os
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit, QCompleter, QFormLayout, QTextEdit
-
+from PyQt5.QtCore import QDate, QTime, QDateTime, Qt
 
 class GUI(QtWidgets.QMainWindow):
     def __init__(self):
@@ -24,7 +24,7 @@ class GUI(QtWidgets.QMainWindow):
         self.completer2 = QCompleter(searchEntry)
 
         # create line edit and add auto complete                                
-        self.places_label = QLabel("Last Place Visited:", self.addEntryWidget)
+        self.places_label = QLabel("Last Place Visited Today:", self.addEntryWidget)
         self.places_input = QLineEdit(self.addEntryWidget)
         self.places_input.setCompleter(self.completer)
 
@@ -166,6 +166,7 @@ class GUI(QtWidgets.QMainWindow):
         address = self.address_input.text()
         contact_number = self.contact_input.text()
         place = self.places_input.text()
+        now = QDate.currentDate()
 
         #Requires the user to fill in all fields
         if not name.strip() or not age.strip() or not address.strip() or not contact_number.strip():
@@ -196,11 +197,13 @@ class GUI(QtWidgets.QMainWindow):
                 file.write("Address: " + address + "\n")
                 file.write("Contact Number: " + contact_number + "\n")
                 file.write("Last Place Visited: " + place + "\n")
+                file.write("Date: " +  now.toString(Qt.ISODate) + "\n")
+                QMessageBox.information(self, "Success", "Data saved successfully!")
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred while saving the text: {e}")
 
 
-        QMessageBox.information(self, "Success", "Data saved successfully!")
+        
 
 #Runs the main program
 if __name__ == '__main__':
