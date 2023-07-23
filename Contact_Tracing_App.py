@@ -3,6 +3,8 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit, QCompleter, QFormLayout, QTextEdit
 from PyQt5.QtCore import QDate, QTime, QDateTime, Qt
 
+
+
 class GUI(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()
@@ -18,15 +20,18 @@ class GUI(QtWidgets.QMainWindow):
         # auto complete options for places in Add Entry
         places = self.load_places_from_file()                                                 
         self.completer = QCompleter(places)
+        self.completer.setCaseSensitivity(0)
 
         # auto complete options for Entries in Search Entry
         searchEntry = self.load_entries_from_folder()                                                 
         self.completer2 = QCompleter(searchEntry)
+        self.completer2.setCaseSensitivity(0)
 
         # create line edit and add auto complete                                
         self.places_label = QLabel("Last Place Visited Today:", self.addEntryWidget)
         self.places_input = QLineEdit(self.addEntryWidget)
         self.places_input.setCompleter(self.completer)
+        
 
         #User Name Input in addEntryWidget
         self.name_label = QLabel("Name:", self.addEntryWidget)
@@ -198,9 +203,22 @@ class GUI(QtWidgets.QMainWindow):
                 file.write("Contact Number: " + contact_number + "\n")
                 file.write("Last Place Visited: " + place + "\n")
                 file.write("Date: " +  now.toString(Qt.ISODate) + "\n")
-                QMessageBox.information(self, "Success", "Data saved successfully!")
+            QMessageBox.information(self, "Success", "Data saved successfully!")
+
+            searchEntry = self.load_entries_from_folder()
+            self.completer2.setModel(QtCore.QStringListModel(searchEntry))
+            self.search_input.setCompleter(self.completer2)
+
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred while saving the text: {e}")
+
+
+        selected_file = selected_file.lower()
+        searchEntry = [entry.lower() for entry in self.load_entries_from_folder()]
+
+        if selected_file not in searchEntry:
+            QMessageBox.warning(self, "Warning", "The selected file does not exist!")
+            return
 
 
         
