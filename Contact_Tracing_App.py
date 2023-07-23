@@ -72,13 +72,16 @@ class GUI(QtWidgets.QMainWindow):
         self.search_input_label = QLabel("Search Text:", self.searchEntryWidget)
         self.search_input = QLineEdit(self.searchEntryWidget)
         self.search_input.setCompleter(self.completer2)
+        self.clear_button = QtWidgets.QPushButton("Clear", self.searchEntryWidget)
+        self.clear_button.clicked.connect(self.clearButton)
+
 
         self.file_content_text_edit = QTextEdit(self.searchEntryWidget)
         self.file_content_text_edit.setReadOnly(True)
         search_entry_layout.addWidget(self.search_input_label)
         search_entry_layout.addWidget(self.search_input)
         search_entry_layout.addWidget(self.file_content_text_edit)
-
+        search_entry_layout.addWidget(self.clear_button)
         # Add both views to the stacked widget
         self.stacked_widget.addWidget(self.addEntryWidget)
         self.stacked_widget.addWidget(self.searchEntryWidget)
@@ -99,7 +102,7 @@ class GUI(QtWidgets.QMainWindow):
         central_widget = QtWidgets.QWidget()
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
-        self.setGeometry(100, 100, 600, 400)
+        self.setGeometry(100, 100, 800, 400)
 
         self.completer2.activated.connect(self.display_file_content)
 
@@ -129,6 +132,9 @@ class GUI(QtWidgets.QMainWindow):
 
     def show_search_entry_view(self):
         self.stacked_widget.setCurrentWidget(self.searchEntryWidget)
+
+    def clearButton(self):
+        self.search_input.clear()
 
     # Loads entries from the folder
     def load_entries_from_folder(self):
