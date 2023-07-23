@@ -1,9 +1,7 @@
 import os
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit, QCompleter, QFormLayout, QTextEdit
+from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit, QCompleter, QFormLayout, QTextEdit, QPushButton
 from PyQt5.QtCore import QDate, QTime, QDateTime, Qt
-
-
 
 class GUI(QtWidgets.QMainWindow):
     def __init__(self):
@@ -93,10 +91,15 @@ class GUI(QtWidgets.QMainWindow):
         self.searchEntryButton = QtWidgets.QPushButton("Search Entry")
         self.searchEntryButton.clicked.connect(self.show_search_entry_view)
 
+        self.toggle_button = QPushButton("Toggle Theme", self.addEntryWidget)
+        self.toggle_button.clicked.connect(self.toggle_theme)
+
+
         #Layout of the program
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.addEntryButton)
         layout.addWidget(self.searchEntryButton)
+        layout.addWidget(self.toggle_button)
         layout.addWidget(self.stacked_widget)
 
         central_widget = QtWidgets.QWidget()
@@ -106,10 +109,26 @@ class GUI(QtWidgets.QMainWindow):
 
         self.completer2.activated.connect(self.display_file_content)
 
-        self.setStyleSheet("""
+        self.light_mode_stylesheet = ("""
             QLabel {
                 font-size: 20px;
                 color: #333333;
+            }
+            QTextEdit {
+                font-size: 20px;
+                color: black; 
+                background-color: #dddddd; 
+                border: 1px solid #999999; 
+                border-radius: 5px;
+                padding: 5px;
+            }
+            QLineEdit {
+                font-size: 20px;
+                color: black; 
+                background-color: #dddddd; 
+                border: 1px solid #999999; 
+                border-radius: 5px;
+                padding: 5px;
             }
             QPushButton {
                 font-size: 20px;
@@ -122,6 +141,47 @@ class GUI(QtWidgets.QMainWindow):
                 background-color: #0096FF;
             }
         """)
+
+        self.dark_mode_stylesheet = ("""
+            
+            QWidget {
+                background-color: black;
+            }
+            QTextEdit {
+                font-size: 20px;
+                color: white; 
+                background-color: #222222; 
+                border: 1px solid #666666; 
+                border-radius: 5px;
+                padding: 5px;
+            }
+            QLineEdit {
+                font-size: 20px;
+                color: white; 
+                background-color: #222222; 
+                border: 1px solid #666666; 
+                border-radius: 5px;
+                padding: 5px;
+            }
+            QLabel {
+                font-size: 20px;
+                color: #cccccc;
+            }
+            QPushButton {
+                font-size: 20px;
+                padding: 15px;
+                background-color: #474747;
+                color: white;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #363461;
+            }
+        """)
+
+        self.light_mode = True
+        self.setStyleSheet(self.light_mode_stylesheet)
+        self.update_toggle_button_text()
 
     def main(self):
         self.window.show()
@@ -241,11 +301,20 @@ class GUI(QtWidgets.QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred while saving the text: {e}")
 
+    def toggle_theme(self):
+        if self.light_mode:
+            self.setStyleSheet(self.dark_mode_stylesheet)
+        else:
+            self.setStyleSheet(self.light_mode_stylesheet)
 
+        self.light_mode = not self.light_mode
+        self.update_toggle_button_text()
 
-
-
-        
+    def update_toggle_button_text(self):
+        if self.light_mode:
+            self.toggle_button.setText("Toggle Dark Mode")
+        else:
+            self.toggle_button.setText("Toggle Light Mode")
 
 #Runs the main program
 if __name__ == '__main__':
