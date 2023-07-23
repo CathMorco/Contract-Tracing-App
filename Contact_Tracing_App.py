@@ -103,6 +103,23 @@ class GUI(QtWidgets.QMainWindow):
 
         self.completer2.activated.connect(self.display_file_content)
 
+        self.setStyleSheet("""
+            QLabel {
+                font-size: 20px;
+                color: #333333;
+            }
+            QPushButton {
+                font-size: 20px;
+                padding: 15px;
+                background-color: #7393B3;
+                color: white;
+                border-radius: 5px;
+            }
+            QPushButton:hover {
+                background-color: #0096FF;
+            }
+        """)
+
     def main(self):
         self.window.show()
         self.app.exec_()
