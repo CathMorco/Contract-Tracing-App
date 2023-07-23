@@ -1,6 +1,6 @@
 import os
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit, QCompleter, QFormLayout
+from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit, QCompleter, QFormLayout, QTextEdit
 
 
 class GUI(QtWidgets.QMainWindow):
@@ -15,9 +15,13 @@ class GUI(QtWidgets.QMainWindow):
         # Add Entry View
         self.addEntryWidget = QtWidgets.QWidget()
 
-        # auto complete options
+        # auto complete options for places in Add Entry
         places = self.load_places_from_file()                                                 
         self.completer = QCompleter(places)
+
+        # auto complete options for Entries in Search Entry
+        searchEntry = self.load_entries_from_folder()                                                 
+        self.completer2 = QCompleter(searchEntry)
 
         # create line edit and add auto complete                                
         self.places_label = QLabel("Last Place Visited:", self.addEntryWidget)
@@ -59,6 +63,17 @@ class GUI(QtWidgets.QMainWindow):
         search_entry_layout = QtWidgets.QVBoxLayout(self.searchEntryWidget)
         search_entry_layout.addWidget(search_entry_label)
 
+        # create line edit and add auto complete for searchEntry
+        self.search_input_label = QLabel("Search Text:", self.searchEntryWidget)
+        self.search_input = QLineEdit(self.searchEntryWidget)
+        self.search_input.setCompleter(self.completer2)
+
+        self.file_content_text_edit = QTextEdit(self.searchEntryWidget)
+        self.file_content_text_edit.setReadOnly(True)
+        search_entry_layout.addWidget(self.search_input_label)
+        search_entry_layout.addWidget(self.search_input)
+        search_entry_layout.addWidget(self.file_content_text_edit)
+
         # Add both views to the stacked widget
         self.stacked_widget.addWidget(self.addEntryWidget)
         self.stacked_widget.addWidget(self.searchEntryWidget)
@@ -81,6 +96,8 @@ class GUI(QtWidgets.QMainWindow):
         self.setCentralWidget(central_widget)
         self.setGeometry(100, 100, 600, 400)
 
+        self.completer2.activated.connect(self.display_file_content)
+
     def main(self):
         self.window.show()
         self.app.exec_()
@@ -90,6 +107,35 @@ class GUI(QtWidgets.QMainWindow):
 
     def show_search_entry_view(self):
         self.stacked_widget.setCurrentWidget(self.searchEntryWidget)
+
+    # Loads entries from the folder
+    def load_entries_from_folder(self):
+        folder_path = "C:/Users/ASUS/Desktop/Visual Studio Code Projects/FINAL PROJECT OOP/Contract-Tracing-App/TextFiles"
+        if os.path.exists(folder_path):
+            try:
+                file_names = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+                return file_names
+            except Exception as e:
+                print(f"An error occurred while loading files from the folder: {e}")
+        return []
+
+    def display_file_content(self, selected_file):
+        if not selected_file.strip():
+            QMessageBox.warning(self, "Warning", "Please enter a valid file name!")
+            return
+
+        folder_path = "C:/Users/ASUS/Desktop/Visual Studio Code Projects/FINAL PROJECT OOP/Contract-Tracing-App/TextFiles"
+        file_path = os.path.join(folder_path, selected_file)
+
+        try:
+            with open(file_path, "r") as file:
+                file_content = file.read()
+                self.file_content_text_edit.setPlainText(file_content)
+        except Exception as e:
+            self.file_content_text_edit.setPlainText(f"An error occurred while reading the file: {e}")
+
+
+
 
     # Loads places from the file
     def load_places_from_file(self):
