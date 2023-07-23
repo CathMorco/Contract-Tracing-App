@@ -205,6 +205,12 @@ class GUI(QtWidgets.QMainWindow):
                 file.write("Date: " +  now.toString(Qt.ISODate) + "\n")
             QMessageBox.information(self, "Success", "Data saved successfully!")
 
+            self.name_input.clear()
+            self.age_input.clear()
+            self.address_input.clear()
+            self.contact_input.clear()
+            self.places_input.clear()
+
             searchEntry = self.load_entries_from_folder()
             self.completer2.setModel(QtCore.QStringListModel(searchEntry))
             self.search_input.setCompleter(self.completer2)
@@ -213,12 +219,7 @@ class GUI(QtWidgets.QMainWindow):
             QMessageBox.critical(self, "Error", f"An error occurred while saving the text: {e}")
 
 
-        selected_file = selected_file.lower()
-        searchEntry = [entry.lower() for entry in self.load_entries_from_folder()]
 
-        if selected_file not in searchEntry:
-            QMessageBox.warning(self, "Warning", "The selected file does not exist!")
-            return
 
 
         
