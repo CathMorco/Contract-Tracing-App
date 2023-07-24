@@ -1,7 +1,10 @@
 import os
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit, QCompleter, QFormLayout, QTextEdit, QPushButton
+from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit, QCompleter, QFormLayout, QTextEdit, QPushButton, QRadioButton, QButtonGroup
 from PyQt5.QtCore import QDate, QTime, QDateTime, Qt
+from PyQt5.QtGui import QIntValidator, QRegExpValidator
+from PyQt5.QtCore import QRegExp
+import re
 
 class GUI(QtWidgets.QMainWindow):
     def __init__(self):
@@ -38,6 +41,7 @@ class GUI(QtWidgets.QMainWindow):
         #User Age Input in addEntryWidget
         self.age_label = QLabel("Age:", self.addEntryWidget)
         self.age_input = QLineEdit(self.addEntryWidget)
+        self.age_input.setValidator(QIntValidator(0, 150, self))
 
         #User Address Input in addEntryWidget
         self.address_label = QLabel("Address:", self.addEntryWidget)
@@ -46,11 +50,31 @@ class GUI(QtWidgets.QMainWindow):
         #User Contact Number Input in addEntryWidget
         self.contact_label = QLabel("Contact Number:", self.addEntryWidget)
         self.contact_input = QLineEdit(self.addEntryWidget)
+        contact_validator = QRegExpValidator(QRegExp(r'\d+'), self) 
+        self.contact_input.setValidator(contact_validator)
 
         #Creating Save Button
         self.save_button = QtWidgets.QPushButton("Save", self.addEntryWidget)
         self.save_button.clicked.connect(self.save_text_to_file)
 
+
+        # Creating the radio buttons for Covid-19 testing
+        self.covid_label = QLabel("Have you been tested for Covid-19 in the last 14 days?", self.addEntryWidget)
+        self.covid_no_button = QRadioButton("No", self.addEntryWidget)
+        self.covid_pending_button = QRadioButton("Yes - Pending", self.addEntryWidget)
+        self.covid_negative_button = QRadioButton("Yes - Negative", self.addEntryWidget)
+        self.covid_positive_button = QRadioButton("Yes - Positive", self.addEntryWidget)
+        self.dummy_radio_button = QRadioButton(self.addEntryWidget)
+        self.dummy_radio_button.setVisible(False)
+
+
+        # Creating a button group for the radio buttons to make them mutually exclusive
+        self.covid_button_group = QButtonGroup(self.addEntryWidget)
+        self.covid_button_group.addButton(self.covid_no_button)
+        self.covid_button_group.addButton(self.covid_pending_button)
+        self.covid_button_group.addButton(self.covid_negative_button)
+        self.covid_button_group.addButton(self.covid_positive_button)
+        self.covid_button_group.addButton(self.dummy_radio_button)
         #Form Layout of addEntryWidget
         add_entry_layout = QtWidgets.QFormLayout(self.addEntryWidget)
         add_entry_layout.addRow(self.places_label, self.places_input)
@@ -58,13 +82,24 @@ class GUI(QtWidgets.QMainWindow):
         add_entry_layout.addRow(self.age_label, self.age_input)
         add_entry_layout.addRow(self.address_label, self.address_input)
         add_entry_layout.addRow(self.contact_label, self.contact_input)
+        add_entry_layout.addRow(self.covid_label)
+        add_entry_layout.addRow(self.covid_no_button)
+        add_entry_layout.addRow(self.covid_pending_button)
+        add_entry_layout.addRow(self.covid_negative_button)
+        add_entry_layout.addRow(self.covid_positive_button)
         add_entry_layout.addWidget(self.save_button)
+
+
+
 
         # Search Entry View
         self.searchEntryWidget = QtWidgets.QWidget()
         search_entry_label = QtWidgets.QLabel("Search Entry View", self.searchEntryWidget)
         search_entry_layout = QtWidgets.QVBoxLayout(self.searchEntryWidget)
         search_entry_layout.addWidget(search_entry_label)
+        self.positive_count_label = QLabel(self.searchEntryWidget)
+        self.search_positive_button = QPushButton("Search Positive Cases", self.searchEntryWidget)
+        self.search_positive_button.clicked.connect(self.search_positive_cases)
 
         # create line edit and add auto complete for searchEntry
         self.search_input_label = QLabel("Search Text:", self.searchEntryWidget)
@@ -74,11 +109,14 @@ class GUI(QtWidgets.QMainWindow):
         self.clear_button.clicked.connect(self.clearButton)
 
 
+
         self.file_content_text_edit = QTextEdit(self.searchEntryWidget)
         self.file_content_text_edit.setReadOnly(True)
         search_entry_layout.addWidget(self.search_input_label)
         search_entry_layout.addWidget(self.search_input)
         search_entry_layout.addWidget(self.file_content_text_edit)
+        search_entry_layout.addWidget(self.positive_count_label) 
+        search_entry_layout.addWidget(self.search_positive_button) 
         search_entry_layout.addWidget(self.clear_button)
         # Add both views to the stacked widget
         self.stacked_widget.addWidget(self.addEntryWidget)
@@ -105,7 +143,7 @@ class GUI(QtWidgets.QMainWindow):
         central_widget = QtWidgets.QWidget()
         central_widget.setLayout(layout)
         self.setCentralWidget(central_widget)
-        self.setGeometry(100, 100, 800, 400)
+        self.setGeometry(100, 100, 400, 600)
 
         self.completer2.activated.connect(self.display_file_content)
 
@@ -121,6 +159,10 @@ class GUI(QtWidgets.QMainWindow):
                 border: 1px solid #999999; 
                 border-radius: 5px;
                 padding: 5px;
+            }
+            QRadioButton {
+                font-size: 20px;
+                color: #333333;
             }
             QLineEdit {
                 font-size: 20px;
@@ -167,6 +209,10 @@ class GUI(QtWidgets.QMainWindow):
                 font-size: 20px;
                 color: #cccccc;
             }
+            QRadioButton {
+                font-size: 20px;
+                color: #cccccc;
+            }
             QPushButton {
                 font-size: 20px;
                 padding: 15px;
@@ -195,7 +241,37 @@ class GUI(QtWidgets.QMainWindow):
 
     def clearButton(self):
         self.search_input.clear()
+        self.file_content_text_edit.clear()
 
+    def search_positive_cases(self):
+        folder_path = "C:/Users/ASUS/Desktop/Visual Studio Code Projects/FINAL PROJECT OOP/Contract-Tracing-App/TextFiles"
+        positive_count = 0
+        positive_cases_info = []
+
+        if os.path.exists(folder_path):
+            try:
+                file_names = [f for f in os.listdir(folder_path) if os.path.isfile(os.path.join(folder_path, f))]
+                for file_name in file_names:
+                    file_path = os.path.join(folder_path, file_name)
+                    with open(file_path, "r") as file:
+                        file_content = file.read()
+                        if "Covid-19 Test Status: Yes - Positive" in file_content:
+                            positive_count += 1
+
+                            # Use regular expressions to find date and place information
+                            date_match = re.search(r"Date: (\d{4}-\d{2}-\d{2})", file_content)
+                            place_match = re.search(r"Last Place Visited: (.+)", file_content)
+
+                            if date_match and place_match:
+                                date_str = date_match.group(1)
+                                place_info = place_match.group(1)
+                                positive_cases_info.append(f"Date: {date_str}, Place: {place_info}, \nCovid Test Status: Yes - Positive \n")
+
+                self.positive_count_label.setText(f"Positive Cases Count: {positive_count}")
+                self.file_content_text_edit.setPlainText("Place & Dates: \n \n" + "\n".join(positive_cases_info))
+
+            except Exception as e:
+                QMessageBox.critical(self, "Error", f"An error occurred while searching for positive cases: {e}")
     # Loads entries from the folder
     def load_entries_from_folder(self):
         folder_path = "C:/Users/ASUS/Desktop/Visual Studio Code Projects/FINAL PROJECT OOP/Contract-Tracing-App/TextFiles"
@@ -263,6 +339,15 @@ class GUI(QtWidgets.QMainWindow):
 
         file_name = "".join(c if c.isalnum() else "_" for c in name)
 
+        covid_option = ""
+        if self.covid_no_button.isChecked():
+            covid_option = "Not Yet Tested"
+        elif self.covid_pending_button.isChecked():
+            covid_option = "Yes - Pending"
+        elif self.covid_negative_button.isChecked():
+            covid_option = "Yes - Negative"
+        elif self.covid_positive_button.isChecked():
+            covid_option = "Yes - Positive"
 
         # Add new place to the places list
         new_place = place.strip()
@@ -285,14 +370,12 @@ class GUI(QtWidgets.QMainWindow):
                 file.write("Address: " + address + "\n")
                 file.write("Contact Number: " + contact_number + "\n")
                 file.write("Last Place Visited: " + place + "\n")
+                file.write("Covid-19 Test Status: " + covid_option + "\n")
                 file.write("Date: " +  now.toString(Qt.ISODate) + "\n")
             QMessageBox.information(self, "Success", "Data saved successfully!")
 
-            self.name_input.clear()
-            self.age_input.clear()
-            self.address_input.clear()
-            self.contact_input.clear()
-            self.places_input.clear()
+            self.clear_text_fields()
+            self.clear_radio_buttons()
 
             searchEntry = self.load_entries_from_folder()
             self.completer2.setModel(QtCore.QStringListModel(searchEntry))
@@ -300,6 +383,16 @@ class GUI(QtWidgets.QMainWindow):
 
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred while saving the text: {e}")
+
+    def clear_text_fields(self):
+        self.name_input.clear()
+        self.age_input.clear()
+        self.address_input.clear()
+        self.contact_input.clear()
+        self.places_input.clear()
+
+    def clear_radio_buttons(self):
+        self.dummy_radio_button.setChecked(True)
 
     def toggle_theme(self):
         if self.light_mode:

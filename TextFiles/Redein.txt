@@ -1,0 +1,7 @@
+Name: Redein
+Age: 12
+Address: 10000
+Contact Number: 1213213
+Last Place Visited: SM City Sta. Mesa
+Covid-19 Test Status: Yes - Negative
+Date: 2023-07-24
