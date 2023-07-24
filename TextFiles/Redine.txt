@@ -1,7 +1,0 @@
-Name: Redine
-Age: 15
-Address: 15
-Contact Number: 15
-Last Place Visited: Arroceros Forest Park
-Covid-19 Test Status: Yes - Positive
-Date: 2023-07-24

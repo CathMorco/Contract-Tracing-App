@@ -1,5 +1,0 @@
-Name: Morooo
-Age: 12
-Address: 12
-Contact Number: 12
-Last Place Visited: SM City Sta. Mesa

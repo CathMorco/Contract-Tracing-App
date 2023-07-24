@@ -1,10 +1,12 @@
 import os
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit, QCompleter, QFormLayout, QTextEdit, QPushButton, QRadioButton, QButtonGroup
+from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit, QCompleter, QTextEdit, QPushButton, QRadioButton, QButtonGroup
 from PyQt5.QtCore import QDate, Qt
 from PyQt5.QtGui import QIntValidator, QRegExpValidator
 from PyQt5.QtCore import QRegExp
 import re
+
+
 
 class GUI(QtWidgets.QMainWindow):
     def __init__(self):

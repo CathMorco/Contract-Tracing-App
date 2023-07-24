@@ -1,7 +1,0 @@
-Name: Sirius
-Age: 48
-Address: Bacoor, Cavite
-Contact Number: 09987654321
-Last Place Visited: Arroceros Forest Park
-Covid-19 Test Status: Yes - Positive
-Date: 2023-07-24

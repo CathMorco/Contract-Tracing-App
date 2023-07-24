@@ -1,7 +1,0 @@
-Name: Joana
-Age: 20
-Address: Habay, Bacoor Cavite
-Contact Number: 09958987123
-Last Place Visited: Puregold Sta.Mesa
-Covid-19 Test Status: Yes - Positive
-Date: 2023-07-24

@@ -1,5 +1,0 @@
-Name: Cath
-Age: 19
-Address: 2004
-Contact Number: 09957567147
-Last Place Visited: SM Manila

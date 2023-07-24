@@ -1,7 +1,0 @@
-Name: Marceline
-Age: 14
-Address: 14
-Contact Number: 14
-Last Place Visited: SM City Sta. Mesa
-Covid-19 Test: No
-Date: 2023-07-24

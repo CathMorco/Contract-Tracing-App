@@ -1,5 +1,0 @@
-Name: carg
-Age: 45
-Address: 2342
-Contact Number: 234234232
-Last Place Visited: SM Manila

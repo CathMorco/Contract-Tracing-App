@@ -1,7 +1,0 @@
-Name: Reioa
-Age: 12
-Address: 12
-Contact Number: 12
-Last Place Visited: PUP College of Engineering and Architecture Bldg., NDC Compound Anonas cor Pureza Sts., Sta. Mesa, Manila 1016
-Covid-19 Test Status: Yes - Negative
-Date: 2023-07-24

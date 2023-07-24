@@ -1,7 +1,0 @@
-Name: Maki
-Age: 12
-Address: 1005
-Contact Number: 100999444
-Last Place Visited: PUP Institute of Technology, NDC Compound, Pureza St., Sta. Mesa, Manila, Philippines 1016
-Covid-19 Test Status: Yes - Pending
-Date: 2023-07-24
