@@ -1,0 +1,7 @@
+Name: Reden
+Age: 19
+Address: Habay, Bacoor, Cavite
+Contact Number: 0999888777
+Last Place Visited: PUP Main - A. Mabini Campus, Sta. Mesa, Manila
+Covid-19 Test Status: Yes - Positive
+Date: 2023-07-25

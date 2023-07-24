@@ -1,0 +1,7 @@
+Name: Nutnut
+Age: 12
+Address: Bacoor, Cavite
+Contact Number: 09985678567
+Last Place Visited: Puregold Sta.Mesa
+Covid-19 Test Status: Yes - Pending
+Date: 2023-07-25

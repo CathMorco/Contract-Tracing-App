@@ -6,8 +6,6 @@ from PyQt5.QtGui import QIntValidator, QRegExpValidator
 from PyQt5.QtCore import QRegExp
 import re
 
-
-
 class GUI(QtWidgets.QMainWindow):
     def __init__(self):
         super().__init__()

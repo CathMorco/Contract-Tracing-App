@@ -1,0 +1,7 @@
+Name: Cate
+Age: 19
+Address: Arellano Street, Santa Mesa, Manila
+Contact Number: 09563457356
+Last Place Visited: SM City Sta. Mesa
+Covid-19 Test Status: Yes - Positive
+Date: 2023-07-25
