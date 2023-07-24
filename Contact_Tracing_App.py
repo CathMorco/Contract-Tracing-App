@@ -1,7 +1,7 @@
 import os
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMessageBox, QStackedWidget, QLabel, QLineEdit, QCompleter, QFormLayout, QTextEdit, QPushButton, QRadioButton, QButtonGroup
-from PyQt5.QtCore import QDate, QTime, QDateTime, Qt
+from PyQt5.QtCore import QDate, Qt
 from PyQt5.QtGui import QIntValidator, QRegExpValidator
 from PyQt5.QtCore import QRegExp
 import re
@@ -64,6 +64,7 @@ class GUI(QtWidgets.QMainWindow):
         self.covid_pending_button = QRadioButton("Yes - Pending", self.addEntryWidget)
         self.covid_negative_button = QRadioButton("Yes - Negative", self.addEntryWidget)
         self.covid_positive_button = QRadioButton("Yes - Positive", self.addEntryWidget)
+        #Invisible radio buttons so that the radio buttons can be "cleared" after saving a new entry
         self.dummy_radio_button = QRadioButton(self.addEntryWidget)
         self.dummy_radio_button.setVisible(False)
 
@@ -109,9 +110,10 @@ class GUI(QtWidgets.QMainWindow):
         self.clear_button.clicked.connect(self.clearButton)
 
 
-
+        #Where the contents of the "Search Entry" or "Search Positive Cases" are displayed
         self.file_content_text_edit = QTextEdit(self.searchEntryWidget)
         self.file_content_text_edit.setReadOnly(True)
+        #Layout of Search Entry
         search_entry_layout.addWidget(self.search_input_label)
         search_entry_layout.addWidget(self.search_input)
         search_entry_layout.addWidget(self.file_content_text_edit)
@@ -122,7 +124,7 @@ class GUI(QtWidgets.QMainWindow):
         self.stacked_widget.addWidget(self.addEntryWidget)
         self.stacked_widget.addWidget(self.searchEntryWidget)
 
-        # Create the Add Entry and Search Entry buttons
+        # Create the Add Entry,Search Entry, & Toggle theme buttons
         self.addEntryButton = QtWidgets.QPushButton("Add Entry")
         self.addEntryButton.clicked.connect(self.show_add_entry_view)
 
@@ -147,6 +149,7 @@ class GUI(QtWidgets.QMainWindow):
 
         self.completer2.activated.connect(self.display_file_content)
 
+        #Light mode stylesheet
         self.light_mode_stylesheet = ("""
             QLabel {
                 font-size: 20px;
@@ -184,6 +187,7 @@ class GUI(QtWidgets.QMainWindow):
             }
         """)
 
+        #Dark Mode stylesheet
         self.dark_mode_stylesheet = ("""
             
             QWidget {
@@ -239,10 +243,12 @@ class GUI(QtWidgets.QMainWindow):
     def show_search_entry_view(self):
         self.stacked_widget.setCurrentWidget(self.searchEntryWidget)
 
+    #Clears the texts in all of the Search Entry's Fields
     def clearButton(self):
         self.search_input.clear()
         self.file_content_text_edit.clear()
 
+    #Searches for the date & places of positive cases & counts them
     def search_positive_cases(self):
         folder_path = "C:/Users/ASUS/Desktop/Visual Studio Code Projects/FINAL PROJECT OOP/Contract-Tracing-App/TextFiles"
         positive_count = 0
@@ -268,10 +274,11 @@ class GUI(QtWidgets.QMainWindow):
                                 positive_cases_info.append(f"Date: {date_str}, Place: {place_info}, \nCovid Test Status: Yes - Positive \n")
 
                 self.positive_count_label.setText(f"Positive Cases Count: {positive_count}")
-                self.file_content_text_edit.setPlainText("Place & Dates: \n \n" + "\n".join(positive_cases_info))
+                self.file_content_text_edit.setPlainText("Places & Dates Of Confirmed Cases: \n \n" + "\n".join(positive_cases_info))
 
             except Exception as e:
                 QMessageBox.critical(self, "Error", f"An error occurred while searching for positive cases: {e}")
+
     # Loads entries from the folder
     def load_entries_from_folder(self):
         folder_path = "C:/Users/ASUS/Desktop/Visual Studio Code Projects/FINAL PROJECT OOP/Contract-Tracing-App/TextFiles"
@@ -283,6 +290,7 @@ class GUI(QtWidgets.QMainWindow):
                 print(f"An error occurred while loading files from the folder: {e}")
         return []
 
+    # Displays the contents of the searched text files
     def display_file_content(self, selected_file):
         if not selected_file.strip():
             QMessageBox.warning(self, "Warning", "Please enter a valid file name!")
@@ -339,6 +347,7 @@ class GUI(QtWidgets.QMainWindow):
 
         file_name = "".join(c if c.isalnum() else "_" for c in name)
 
+        #Sets covid option label based on the radio buttons
         covid_option = ""
         if self.covid_no_button.isChecked():
             covid_option = "Not Yet Tested"
@@ -374,9 +383,11 @@ class GUI(QtWidgets.QMainWindow):
                 file.write("Date: " +  now.toString(Qt.ISODate) + "\n")
             QMessageBox.information(self, "Success", "Data saved successfully!")
 
+            #Clears add entry widget for new input
             self.clear_text_fields()
             self.clear_radio_buttons()
 
+            #Utilizes the autocompleter to search and load entries from the folder
             searchEntry = self.load_entries_from_folder()
             self.completer2.setModel(QtCore.QStringListModel(searchEntry))
             self.search_input.setCompleter(self.completer2)
@@ -384,6 +395,7 @@ class GUI(QtWidgets.QMainWindow):
         except Exception as e:
             QMessageBox.critical(self, "Error", f"An error occurred while saving the text: {e}")
 
+    #Clears text fields in the Add Entry Widget
     def clear_text_fields(self):
         self.name_input.clear()
         self.age_input.clear()
@@ -391,9 +403,11 @@ class GUI(QtWidgets.QMainWindow):
         self.contact_input.clear()
         self.places_input.clear()
 
+    #Clears the radio buttons in the Add Entry Widget
     def clear_radio_buttons(self):
         self.dummy_radio_button.setChecked(True)
 
+    #Is connected to the toggle theme button, which allows the user to switch from dark mode to light mode
     def toggle_theme(self):
         if self.light_mode:
             self.setStyleSheet(self.dark_mode_stylesheet)
@@ -403,6 +417,7 @@ class GUI(QtWidgets.QMainWindow):
         self.light_mode = not self.light_mode
         self.update_toggle_button_text()
 
+    #Updates the button label everytime the user clicks the toggle button
     def update_toggle_button_text(self):
         if self.light_mode:
             self.toggle_button.setText("Toggle Dark Mode")
