@@ -1,0 +1,7 @@
+Name: Rihanna
+Age: 47
+Address: California, USA
+Contact Number: 09756784567
+Last Place Visited: SM Bacoor City
+Covid-19 Test Status: Yes - Negative
+Date: 2023-07-25

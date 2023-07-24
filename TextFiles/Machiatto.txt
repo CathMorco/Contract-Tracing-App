@@ -1,0 +1,7 @@
+Name: Machiatto
+Age: 12
+Address: Imus, Cavite
+Contact Number: 09957658765
+Last Place Visited: College of Communication, COC Building, NDC Compound, Anonas St., Sta. Mesa, Manila 1016
+Covid-19 Test Status: Yes - Positive
+Date: 2023-07-25
